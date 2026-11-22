@@ -35,7 +35,7 @@ ipTIME BE3600plus(Airoha AN7563, 256 MiB RAM, SPI-NAND, MT7990 Wi-Fi)에 OpenWrt
 | Wi-Fi 5 GHz 160 MHz 업로드 | 약 930 Mbit/s |
 | Wi-Fi 5 GHz 160 MHz 다운로드 | 약 870–890 Mbit/s |
 
-Wi-Fi는 CPU 성능에서 막힙니다. AN7563의 NPU Wi-Fi 오프로드는 MT7992(BE5100M, Xiaomi BE5000)만 지원하고, 이 공유기의 MT7990은 지원하지 않습니다. 유선 라우팅은 하드웨어 오프로드를 그대로 씁니다.
+Wi-Fi는 CPU 성능의 제한을 받습니다. AN7563의 NPU Wi-Fi 오프로드는 MT7992(BE5100M, Xiaomi BE5000)만 지원하고, 이 공유기의 MT7990은 지원하지 않습니다. 유선 라우팅은 하드웨어 오프로드를 그대로 씁니다.
 
 5 GHz Wi-Fi는 80 MHz로 시작합니다. 160 MHz는 LuCI(Network → Wireless)에서 설정할 수 있습니다.
 
