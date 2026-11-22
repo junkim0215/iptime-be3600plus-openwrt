@@ -55,7 +55,7 @@ Get the files from [Releases](../../releases).
 2. Upload `openwrt-airoha-an7563-iptime_be3600p-squashfs-factory_16_006.bin` as it is. The file name must contain `_16_006`.
 3. Do not power off; the router reboots by itself. Check whether LuCI comes up at `http://192.168.1.1` (user `root`, no password).
    - If LuCI comes up, set a root password.
-   - **If OpenWrt (LuCI) does not come up within 5 minutes and the stock firmware returns** (the router reboots once by itself in between), the stock firmware was running from the second slot. Upload the official stock firmware (from the [ipTIME download page](https://iptime.com/support/downloads)) through the web UI once more, which brings it back to the main slot, then repeat steps 1–3.
+   - **If OpenWrt (LuCI) does not come up within 5 minutes and the stock firmware returns** (the router reboots once by itself in between), the stock firmware was running from the second slot. Upload the official stock firmware (from the [ipTIME download page](https://iptime.com/support/downloads?dfsid=21&dftid=1011)) through the web UI once more, which brings it back to the main slot, then repeat steps 1–3.
 
 ## Installing or recovering with UART (advanced)
 
