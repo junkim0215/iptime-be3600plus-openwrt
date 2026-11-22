@@ -1,0 +1,129 @@
+# OpenWrt for ipTIME BE3600plus
+
+[English](README.md) | **한국어**
+
+> [!TIP]
+> **OpenWrt를 쓰려고 공유기를 새로 고르는 중이라면** OpenWrt가 공식 지원하는 기기를 고르세요. 예를 들어 MediaTek Filogic 기반 ipTIME 모델(AX3000 계열 등)이 있습니다. 이 포트는 BE3600plus를 이미 가진 분들을 위한 것입니다.
+
+ipTIME BE3600plus(Airoha AN7563, 256 MiB RAM, SPI-NAND, MT7990 Wi-Fi)에 OpenWrt를 설치하는 비공식 포트입니다. 제조사 U-Boot를 그대로 쓰며 부트로더를 건드리지 않습니다. OpenWrt는 제조사 펌웨어의 두 번째 슬롯에 설치되고, 제조사 펌웨어는 첫 번째 슬롯에 그대로 남습니다.
+
+소스는 [ipTIME BE5100M 포트](https://github.com/junkim0215/iptime-be5100m-openwrt)와 같이 씁니다.
+
+> [!WARNING]
+> 비공식 펌웨어입니다. 설치하면 제조사 보증이 사라질 수 있고, 플래시 중 문제가 생기면 UART 연결이 필요할 수 있습니다. 모든 책임은 사용자 본인에게 있습니다.
+
+## 상태
+
+| 기능 | 상태 |
+|---|---|
+| LAN 3포트, WAN(DHCP) | 동작 |
+| Wi-Fi 2.4 / 5 GHz | 동작 (KR), CPU로 처리(아래 참고) |
+| 하드웨어 라우팅 오프로드(PPE) | 동작, 기본 켜짐 |
+| LED(상태, 2.4G, 5G, 포트), 리셋·WPS 버튼 | 동작 |
+| 제조사 MAC 주소 | 동작 (r147부터) |
+| LuCI, sysupgrade(설정 유지) | 동작 |
+| NPU Wi-Fi 가속 | **지원 안 함** (MT7990) |
+| 장시간 안정성 | **미확인** |
+
+한 대의 기기에서만 확인했습니다.
+
+### 처리량 (r147, 하드웨어 오프로드 켬, TCP)
+
+| 시험 | 결과 |
+|---|---|
+| 유선 업로드 UDP 20 Mbit/s, TCP 200 Mbit/s, 60초 | 정지·손실 없음 |
+| Wi-Fi 5 GHz 160 MHz 업로드 | 약 930 Mbit/s |
+| Wi-Fi 5 GHz 160 MHz 다운로드 | 약 870–890 Mbit/s |
+
+Wi-Fi는 CPU 성능에서 막힙니다. AN7563의 NPU Wi-Fi 오프로드는 MT7992(BE5100M, Xiaomi BE5000)만 지원하고, 이 공유기의 MT7990은 지원하지 않습니다. 유선 라우팅은 하드웨어 오프로드를 그대로 씁니다.
+
+5 GHz Wi-Fi는 80 MHz로 시작합니다. 160 MHz는 LuCI(Network → Wireless)에서 설정할 수 있습니다.
+
+## 다운로드
+
+[Releases](../../releases)에서 받습니다.
+
+| 파일 | 용도 |
+|---|---|
+| `…-squashfs-factory_16_006.bin` | 정펌 웹 UI로 설치 |
+| `…-squashfs-sysupgrade.bin` | OpenWrt에서 업그레이드(설정 유지) |
+| `…-squashfs-slot.bin` | U-Boot TFTP 설치(UART) |
+
+## 설치 (UART 없이, 제조사 웹 UI)
+
+1. 제조사 펌웨어 관리 페이지(`192.168.0.1`) → 관리도구 → 시스템 관리 → 펌웨어 업그레이드.
+2. `openwrt-airoha-an7563-iptime_be3600p-squashfs-factory_16_006.bin`을 이름을 바꾸지 말고 올립니다. 파일 이름에 `_16_006`이 들어 있어야 합니다.
+3. 전원을 끄지 말고 기다립니다. 자동 재부팅 후 `http://192.168.1.1`로 LuCI가 뜨는지 확인합니다(사용자 `root`, 비밀번호 없음).
+   - LuCI가 뜨면 root 비밀번호를 설정하세요.
+   - **5분 안에 OpenWrt(LuCI)가 안 뜨고 제조사 펌웨어가 다시 올라오면**(중간에 한 번 스스로 재부팅됩니다) 제조사 펌웨어가 두 번째 슬롯에서 돌고 있었던 것입니다. [ipTIME 다운로드 페이지](https://iptime.com/support/downloads)에서 받은 제조사 펌웨어를 웹 UI로 한 번 더 올리면 제조사 펌웨어가 메인 슬롯으로 돌아오니, 그 뒤 위 1~3을 다시 시도합니다.
+
+## UART로 설치·복구 (고급)
+
+웹 설치를 할 수 없거나 OpenWrt가 부팅되지 않을 때 씁니다. 3.3 V USB-UART 어댑터(GND, TX, RX만 연결, VCC는 연결하지 않음), `192.168.0.100`의 PC에서 돌아가는 TFTP 서버, `*-slot.bin` 이미지가 필요합니다.
+
+1. UART(115200 8N1)를 연결하고 전원을 켠 뒤 `Hit any key to stop autoboot`가 보이면 아무 키나 눌러 U-Boot `ECNT>` 프롬프트로 들어갑니다(대기 시간이 짧습니다).
+2. PC를 고정 IP `192.168.0.100/24`로 설정하고 LAN 포트(예: LAN1)에 연결한 뒤 TFTP 서버를 켭니다(Windows는 방화벽에서 TFTP 허용). 그다음 아래를 실행합니다(`<len>`은 파일 크기를 `0x20000` 단위로 올린 값).
+
+```
+tftpboot 0x88000000 openwrt-airoha-an7563-iptime_be3600p-squashfs-slot.bin
+crc32 0x88000000 <len>
+flash erase 0x2D00000 <len>
+flash write 0x2D00000 <len> 0x88000000
+flash read 0x2D00000 <len> 0x89000000
+crc32 0x89000000 <len>
+flash erase <0x2D00000+len> <0x2800000-len>
+bootflag read
+reset
+```
+
+3. 두 `crc32` 값이 파일의 CRC와 같아야 합니다. `bootflag read`가 `0`이면 `reset` 전에 `bootflag swap`을 실행해 두 번째 슬롯(OpenWrt)으로 부팅되게 합니다.
+
+> [!CAUTION]
+> `0x2D00000`–`0x54FFFFF`(두 번째 슬롯)에만 쓰세요. `saveenv`를 실행하거나 다른 주소에 쓰지 마세요. U-Boot에서 제조사 펌웨어로 돌아가려면 플래그가 `0`이 되도록 `bootflag swap`을 실행합니다.
+
+## 업그레이드
+
+OpenWrt 안에서 LuCI → 시스템 → 백업/펌웨어 업그레이드로 `sysupgrade.bin`을 올립니다(설정 유지 가능). `-F`(강제)는 쓰지 마세요.
+
+## 제조사 펌웨어로 되돌리기 (UART 없이)
+
+OpenWrt에서 아래를 실행하면 부팅 시 U-Boot가 제조사 펌웨어로 전환합니다. 제조사 펌웨어가 메인 슬롯에 남아 있어야 합니다(정상 설치 상태). 설정 백업을 먼저 받으세요.
+
+```
+fw_setenv boot_try 0 && reboot
+```
+
+## 알려진 제한 사항
+
+- NPU Wi-Fi 가속이 없습니다(위 참고). LuCI의 NPU 페이지에는 게임 모드, PPPoE MSS, MLO만 보입니다.
+- 제조사의 리셋 버튼 TFTP 복구 모드는 시험하지 않았습니다. ipTIME Firmware Wizard는 BE 모델을 지원하지 않습니다.
+- BE5100M과 Xiaomi BE5000에서는 `sysupgrade` 후 재부팅이 가끔 멈춥니다. 몇 분이 지나도 돌아오지 않으면 전원을 껐다 켜세요.
+- 패키지 저장소는 공식 `base`, `luci`, `packages`, `routing`, `telephony`, `video`만 남깁니다. 이미지에 없는 커널 모듈은 `apk add kmod-…`로 설치할 수 없습니다.
+
+## 소스와 빌드
+
+소스는 junkim0215/openwrt의 `be3600p` 브랜치입니다. 릴리스마다 빌드한 커밋에
+태그(`be3600p-rNNN`)가 있고, 태그와 커밋은 릴리스 노트에 적혀 있습니다.
+
+```
+git clone https://github.com/junkim0215/openwrt.git && cd openwrt
+git checkout be3600p-rNNN    # 예: be3600p-r147
+./scripts/feeds update -a && ./scripts/feeds install -a
+cp <diffconfig> .config && make defconfig && make -j$(nproc)
+```
+
+## 크레딧
+
+이 포팅은 다음 분들의 작업을 기반으로 만들어졌습니다:
+- **Ray Liu (xinyooo)**: AN7563 기본 지원(핀 컨트롤러, NAND 배드블록 테이블, U-Boot) 및 샤오미(Xiaomi) BE5000 지원 (openwrt/openwrt#23960)
+- **Iscle**: AN7563 이더넷, 스위치, PCIe 및 PPE 포워딩
+- **Pavel Bragin (pabragin)**: 이 포팅의 기반이 된 샤오미 BE5000 빌드
+- **Paulo José Rolim Braga Filho (paulojjj)**: QDMA reset 수정 (openwrt/openwrt#26755)
+- **kyoto44**: MT7990 TXD 수정 (openwrt/mt76#1043, #1065)
+- OpenWrt 프로젝트
+
+이 포트는 Claude(Anthropic)의 도움을 받아 작성했고, 변경 사항은 실제 기기에서 시험했습니다.
+
+라이선스는 GPL-2.0입니다.
+
+이미지에는 Wi-Fi와 NPU용 바이너리 펌웨어가 포함되어 있습니다. 라이선스는 해당 OpenWrt 패키지의 정보를 따릅니다.
