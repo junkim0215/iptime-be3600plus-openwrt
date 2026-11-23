@@ -112,6 +112,11 @@ git checkout be3600p-rNNN    # 예: be3600p-r147
 cp <diffconfig> .config && make defconfig && make -j$(nproc)
 ```
 
+## 다른 ipTIME 기기
+
+- [ipTIME BE5100M](https://github.com/junkim0215/iptime-be5100m-openwrt) (Airoha AN7563)
+- [ipTIME BE5100plus](https://github.com/junkim0215/iptime-be5100plus-openwrt) (MediaTek MT7987, 공식 OpenWrt 지원 전까지 쓰는 미리보기)
+
 ## 크레딧
 
 이 포팅은 다음 분들의 작업을 기반으로 만들어졌습니다:
