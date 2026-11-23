@@ -102,13 +102,12 @@ fw_setenv boot_try 0 && reboot
 
 ## Source and building
 
-The source is the `be3600p` branch of junkim0215/openwrt. Each release is tagged
-at the commit it was built from (`be3600p-rNNN`); the tag and commit are listed
-in the release notes.
+The source is in junkim0215/openwrt. Each release is built from a tag
+(`be3600p-rNNN`); each release note lists its tag and commit.
 
 ```
 git clone https://github.com/junkim0215/openwrt.git && cd openwrt
-git checkout be3600p-rNNN    # e.g. be3600p-r147
+git checkout be3600p-rNNN    # e.g. be3600p-r162
 ./scripts/feeds update -a && ./scripts/feeds install -a
 cp <diffconfig> .config && make defconfig && make -j$(nproc)
 ```

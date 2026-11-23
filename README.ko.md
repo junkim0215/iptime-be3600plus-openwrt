@@ -102,12 +102,12 @@ fw_setenv boot_try 0 && reboot
 
 ## 소스와 빌드
 
-소스는 junkim0215/openwrt의 `be3600p` 브랜치입니다. 릴리스마다 빌드한 커밋에
-태그(`be3600p-rNNN`)가 있고, 태그와 커밋은 릴리스 노트에 적혀 있습니다.
+소스는 junkim0215/openwrt에 있습니다. 릴리스마다 태그(`be3600p-rNNN`)에서
+빌드하며, 릴리스 노트마다 태그와 커밋이 적혀 있습니다.
 
 ```
 git clone https://github.com/junkim0215/openwrt.git && cd openwrt
-git checkout be3600p-rNNN    # 예: be3600p-r147
+git checkout be3600p-rNNN    # 예: be3600p-r162
 ./scripts/feeds update -a && ./scripts/feeds install -a
 cp <diffconfig> .config && make defconfig && make -j$(nproc)
 ```
