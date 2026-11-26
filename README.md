@@ -97,7 +97,7 @@ fw_setenv boot_try 0 && reboot
 
 - No NPU Wi-Fi acceleration (see above). The NPU page in LuCI shows only gaming mode, PPPoE MSS and MLO.
 - The stock reset-button TFTP recovery mode has not been tested. ipTIME Firmware Wizard does not support BE models.
-- After a sysupgrade, the reboot sometimes hangs (about 1 in 3, same as on pabragin's BE5000). The image and settings are already written: unplug the power and plug it back in.
+- About one warm reboot in five to ten (`sysupgrade`, `reboot`) does not come back: all LEDs stay off. If the router has not come back within two minutes, power cycle it; the new image is already written.
 - Only the official `base`, `luci`, `packages`, `routing`, `telephony` and `video` package feeds are kept. Kernel modules that are not in the image cannot be installed with `apk add kmod-…`.
 
 ## Source and building

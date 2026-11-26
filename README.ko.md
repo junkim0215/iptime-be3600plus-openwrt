@@ -97,7 +97,7 @@ fw_setenv boot_try 0 && reboot
 
 - NPU Wi-Fi 가속이 없습니다(위 참고). LuCI의 NPU 페이지에는 게임 모드, PPPoE MSS, MLO만 보입니다.
 - 제조사의 리셋 버튼 TFTP 복구 모드는 시험하지 않았습니다. ipTIME Firmware Wizard는 BE 모델을 지원하지 않습니다.
-- sysupgrade 후 재부팅이 가끔 멈춥니다(3번에 1번 정도, pabragin BE5000과 같음). 이미지와 설정은 이미 기록돼 있으니 전원을 뽑았다 다시 꽂으세요.
+- 웜 재부팅(`sysupgrade`, `reboot`) 5~10번에 1번 정도는 다시 올라오지 않고 LED가 모두 꺼진 채로 있습니다. 2분 안에 돌아오지 않으면 전원을 뽑았다 다시 꽂으세요. 새 이미지는 이미 기록돼 있습니다.
 - 패키지 저장소는 공식 `base`, `luci`, `packages`, `routing`, `telephony`, `video`만 남깁니다. 이미지에 없는 커널 모듈은 `apk add kmod-…`로 설치할 수 없습니다.
 
 ## 소스와 빌드
